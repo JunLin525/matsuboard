@@ -1,0 +1,279 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f7f7f5;
+  --fg: #1a1a1a;
+  --muted: #666;
+  --border: #ddd;
+  --cancelled-bg: #fdecea;
+  --cancelled-fg: #a4262c;
+  --advisory-bg: #fff4ce;
+  --advisory-fg: #6b4e00;
+
+  /* dataviz: chart chrome + 固定 status palette（不隨品牌色主題化） */
+  --chart-surface: #fcfcfb;
+  --chart-grid: #e1e0d9;
+  --chart-axis: #c3c2b7;
+  --chart-text-muted: #898781;
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-critical: #d03b3b;
+  --status-other: #b9b7ae;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161616;
+    --fg: #f0f0f0;
+    --muted: #aaa;
+    --border: #333;
+    --cancelled-bg: #3a1f1f;
+    --cancelled-fg: #ff8a80;
+    --advisory-bg: #3a300f;
+    --advisory-fg: #ffd666;
+
+    --chart-surface: #1a1a19;
+    --chart-grid: #2c2c2a;
+    --chart-axis: #383835;
+    --chart-text-muted: #898781;
+    --status-good: #0ca30c;
+    --status-warning: #fab219;
+    --status-critical: #e66767;
+    --status-other: #55534d;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.app-header h1 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.advisory-banner {
+  background: var(--advisory-bg);
+  color: var(--advisory-fg);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+
+.advisory-banner p {
+  margin: 4px 0;
+  font-weight: 600;
+}
+
+section {
+  margin-bottom: 32px;
+}
+
+.board-group {
+  margin-bottom: 16px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+th,
+td {
+  border-bottom: 1px solid var(--border);
+  padding: 8px 10px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+tr.cancelled {
+  background: var(--cancelled-bg);
+  color: var(--cancelled-fg);
+  font-weight: 600;
+}
+
+.error {
+  color: var(--cancelled-fg);
+}
+
+.app-footer {
+  margin-top: 24px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* ---- 航班狀態趨勢圖 ---- */
+
+.stats-section h2 {
+  font-size: 1.1rem;
+  margin: 0 0 12px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.stats-chart {
+  position: relative;
+  background: var(--chart-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px 16px;
+}
+
+.stats-chart-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.stats-chart-head h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.stats-chart-sub {
+  color: var(--chart-text-muted);
+  font-size: 0.78rem;
+}
+
+.stats-empty {
+  color: var(--chart-text-muted);
+  font-size: 0.85rem;
+}
+
+.stats-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.stats-axis-label {
+  fill: var(--chart-text-muted);
+  font-size: 9px;
+}
+
+.stats-hit {
+  cursor: pointer;
+}
+
+.stats-hit-active {
+  fill: color-mix(in srgb, var(--fg) 6%, transparent);
+}
+
+.stats-tooltip {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+  min-width: 140px;
+}
+
+.stats-tooltip strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.stats-tooltip ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.stats-tooltip li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 1px 0;
+}
+
+.stats-tooltip-key {
+  display: inline-block;
+  width: 10px;
+  height: 0;
+  border-top: 2px solid;
+}
+
+.stats-tooltip-total {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+  color: var(--chart-text-muted);
+}
+
+.stats-legend {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin: 8px 0 0;
+  padding: 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.stats-legend li {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.stats-legend-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.stats-table-details {
+  margin-top: 10px;
+  font-size: 0.8rem;
+}
+
+.stats-table-details summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.stats-table {
+  margin-top: 8px;
+  font-size: 0.8rem;
+}
