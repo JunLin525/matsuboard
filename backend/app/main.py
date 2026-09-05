@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from common.db import SessionLocal
 from common.models import Advisory, FerrySchedule, Flight
+from common.timeutil import today_taipei
 
 app = FastAPI(title="MatsuBoard API")
 
@@ -24,7 +25,7 @@ DIRECTION_LABEL = {"D": "離站", "A": "到站"}
 
 
 def _parse_date(value: str | None) -> date:
-    return date.fromisoformat(value) if value else date.today()
+    return date.fromisoformat(value) if value else today_taipei()
 
 
 @app.get("/api/health")
@@ -126,7 +127,7 @@ def get_stats(days: int = Query(3, ge=1, le=14)):
 
     只有 3 天保留期內的資料撐得住這個查詢；超過保留期的日子會回傳全 0。
     """
-    end = date.today()
+    end = today_taipei()
     start = end - timedelta(days=days - 1)
     db = SessionLocal()
     try:

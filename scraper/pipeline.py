@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta
 
 from common.db import SessionLocal
 from common.models import Advisory, FerryAnnouncement, FerrySchedule, Flight
+from common.timeutil import today_taipei
 
 from .adapters.caa_flights import fetch_caa_flights
 from .adapters.matsu_ferry import (
@@ -23,7 +24,7 @@ SCHEDULE_HORIZON_DAYS = 3  # 產生今天起 N 天的固定船班骨架
 
 def refresh_flights() -> None:
     """抓南竿/北竿 x 離站/到站，用 upsert 更新今天的航班狀態。"""
-    today = date.today()
+    today = today_taipei()
     db = SessionLocal()
     try:
         for airport in AIRPORTS:
@@ -102,7 +103,7 @@ def sync_ferry_schedule() -> None:
     """先用固定規則(單馬雙東/週二保養)產生骨架，再套用公告裡的停航資訊。"""
     db = SessionLocal()
     try:
-        today = date.today()
+        today = today_taipei()
         for offset in range(SCHEDULE_HORIZON_DAYS):
             _ensure_schedule_rows(db, today + timedelta(days=offset))
         db.flush()
@@ -144,7 +145,7 @@ def _ensure_schedule_rows(db, d: date) -> None:
 
 def compute_advisory() -> None:
     """今天某機場航班「全數取消」時，產生建議搭船的提示卡。"""
-    today = date.today()
+    today = today_taipei()
     db = SessionLocal()
     try:
         for airport in AIRPORTS:
@@ -187,7 +188,7 @@ def _upsert_advisory(db, d: date, type_: str, message: str) -> None:
 
 def cleanup_old_data() -> None:
     """只保留最近 RETENTION_DAYS 天的航班資料。"""
-    cutoff = date.today() - timedelta(days=RETENTION_DAYS)
+    cutoff = today_taipei() - timedelta(days=RETENTION_DAYS)
     db = SessionLocal()
     try:
         db.query(Flight).filter(Flight.date < cutoff).delete()
