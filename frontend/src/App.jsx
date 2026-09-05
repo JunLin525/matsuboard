@@ -10,8 +10,13 @@ import { usePolling } from "./hooks/usePolling";
 const POLL_INTERVAL_MS = 60_000;
 const STATS_DAYS = 3;
 
+// 不用 toISOString()：那個固定回傳 UTC 時間，會跟看板的台灣時間對不上
+// （凌晨 0-8 點會顯示成昨天）。用 Intl 明確指定 Asia/Taipei，跟後端算
+// 「今天」的邏輯一致（見 common/timeutil.py 的 today_taipei()）。
+const TAIPEI_DATE_FORMATTER = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" });
+
 function todayISO() {
-  return new Date().toISOString().slice(0, 10);
+  return TAIPEI_DATE_FORMATTER.format(new Date());
 }
 
 export default function App() {
