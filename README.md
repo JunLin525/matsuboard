@@ -71,4 +71,4 @@ npm run dev
 
 - CAA 和 matsuebs.com 都不是官方公開 API，是爬蟲，網站改版可能讓 adapter 失效（見 `scraper/adapters/`）
 - 船班公告的日期/類型是用關鍵字從標題猜的（`extract_dates_from_title` / `_classify`），不保證 100%準確
-- 授權採用 [PolyForm Noncommercial License 1.0.0](./LICENSE)，記得把 LICENSE 檔案裡的 `[Your Name / Org]` 換成實際著作權人
+- 授權採用 [PolyForm Noncommercial License 1.0.0](./LICENSE)：原始碼公開、僅限非商業用途
